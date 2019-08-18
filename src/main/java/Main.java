@@ -55,7 +55,7 @@ public class Main extends Application {
                 this.urlsText.setText(this.urls);
             }
             else {
-                AlertError.display("Error!", "Entered URL format is incorrect");
+                Alert.display("Error!", "Entered URL format is incorrect");
             }
         });
 
@@ -78,7 +78,7 @@ public class Main extends Application {
         serializeButton.setText("Save as .txt File");
         serializeButton.setOnAction(e -> {
                 crawler.save("page" + PAGE_NUM);
-                AlertError.display("Success!", "Urls Saved Successfully!");
+                Alert.display("Success!", "Urls Saved Successfully!");
         });
 
         VBox layout2 = new VBox(10);

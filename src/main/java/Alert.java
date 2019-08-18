@@ -6,7 +6,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class AlertError {
+public class Alert {
 
     public static void display(String title, String message) {
         Stage window = new Stage();
