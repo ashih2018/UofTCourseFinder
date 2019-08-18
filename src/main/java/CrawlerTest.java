@@ -9,17 +9,17 @@ public class CrawlerTest {
 
     public String run(String input, String keyword) {
         if (keyword.equals("")) {
-//            this.crawler.getLinks(input, "", 0);
+//            this.crawler.findCourses(input, "", 0);
         }
         else {
-//            this.crawler.getLinks(input, keyword, 0);
+//            this.crawler.findCourses(input, keyword, 0);
         }
 //        System.out.println(this.crawler.getURLS());
-        return this.crawler.getURLS();
+        return this.crawler.getUrls();
     }
 
     public void serialize() {
-        crawler.serialize("page" + PAGE_NUM);
+        crawler.save("page" + PAGE_NUM);
         PAGE_NUM++;
     }
 

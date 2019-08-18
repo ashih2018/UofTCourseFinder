@@ -16,9 +16,9 @@ import java.util.regex.Pattern;
 
 public class Main extends Application {
 
-    public static final String URL = "http://coursefinder.utoronto.ca/course-search/search/courseSearch?viewId=CourseSearch-FormView&methodToCall=start";
+    public static final String URL = "https://fas.calendar.utoronto.ca/search-courses";
     public static int PAGE_NUM = 1;
-    private Crawler c;
+    private Crawler crawler;
     private Scene scene1, scene2;
     private String urls;
     private Text urlsText;
@@ -29,13 +29,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        this.c = new Crawler();
+        this.crawler = new Crawler();
         primaryStage.setTitle("UofT Course Search");
 
         //layout1
-        TextField keyword = new TextField();
+        TextField keywordInput = new TextField();
         Label keywordLabel = new Label("Search for keyword: ");
-        keywordLabel.setLabelFor(keyword);
+        keywordLabel.setLabelFor(keywordInput);
 
         TextField breadthInput = new TextField();
         Label breadthLabel = new Label("Search for breadth classes: ");
@@ -49,7 +49,8 @@ public class Main extends Application {
         searchButton.setText("Search!");
         searchButton.setOnAction(e -> {
             if (this.checkURL(URL)) {
-                this.urls = this.c.getLinks(URL, keyword.getText(), breadthInput.getText(), levelInput.getText(), 0);
+                this.crawler.findCourses(URL, keywordInput.getText(), breadthInput.getText(), levelInput.getText(), 0);
+                this.urls = this.crawler.getUrls();
                 primaryStage.setScene(scene2);
                 this.urlsText.setText(this.urls);
             }
@@ -59,10 +60,10 @@ public class Main extends Application {
         });
 
         FlowPane container = new FlowPane();
-        container.getChildren().addAll(breadthInput, keyword, searchButton);
+        container.getChildren().addAll(breadthInput, keywordInput, searchButton);
         VBox layout1 = new VBox(10);
         layout1.setPadding(new Insets(20, 20, 20, 20));
-        layout1.getChildren().addAll(breadthLabel, breadthInput, keywordLabel, keyword, searchButton);
+        layout1.getChildren().addAll(keywordLabel, keywordInput, breadthLabel, breadthInput, levelLabel, levelInput, searchButton);
         scene1 = new Scene(layout1, 300, 250);
 
         //layout 2
@@ -76,8 +77,7 @@ public class Main extends Application {
         Button serializeButton = new Button();
         serializeButton.setText("Save as .txt File");
         serializeButton.setOnAction(e -> {
-                PAGE_NUM++;
-                c.serialize("page" + PAGE_NUM);
+                crawler.save("page" + PAGE_NUM);
                 AlertError.display("Success!", "Urls Saved Successfully!");
         });
 
