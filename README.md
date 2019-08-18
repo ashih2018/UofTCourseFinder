@@ -16,5 +16,5 @@ Once the search has finished, the program will display all courses that meet the
 The user will also have the option to save the courses in a text file.
 
 ## Contributors
-3-D Rubik's cube was written by Alexander Shih, student at the University 
+University of Toronto Course Searcher was written by Alexander Shih, student at the University 
 of Toronto, class of 2022. 
