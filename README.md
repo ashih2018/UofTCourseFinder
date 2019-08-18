@@ -1,9 +1,9 @@
 # University of Toronto Course Searcher
 Currently, University of Toronto's course search page has basic searching functionality. This 
 program was written to expand upon the currently search functionality. Additional to being able to search
-for keyword and breadth, University of Toronto Course Searcher also gives the option to search for different level courses.
-University of Toronto Course Searcher uses a simple GUI and uses web crawler and web scraping functionality
-to retrieve course information. By default, University of Toronto Course Searcher searches for a maximum of 100 courses.
+for keyword and breadth, University of Toronto Course Searcher also gives the option to search for different level courses 
+as well as certain page numbers. University of Toronto Course Searcher is a simple GUI that uses web crawler and web scraping functionality
+to retrieve course information. University of Toronto Course Searcher searches for a maximum of 100 courses.
 
 ## Usage
 To run this program, run main.py.
