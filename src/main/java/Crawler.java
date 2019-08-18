@@ -12,26 +12,27 @@ import java.util.List;
 public class Crawler {
 
     private static final int MAX_SEARCH = 100;
-    private static final int MAX_DEPTH = 3;
     private List<String> urls;
 
     public Crawler() {
         this.urls = new LinkedList<>();
     }
 
-    public void findCourses(String url, String keyword, String breadth, String level, int depth) {
-        if (depth == 0) {
-            // if we are searching we want to reset our urls list
+    public void findCourses(String url, String keyword, String breadth, String level, int low, int high, boolean search) {
+        if (low > high) {
+            return;
+        }
+        if (search) {
+            // we want to reset our urls list if it is a new search
             this.urls = new LinkedList<>();
         }
-        if (!this.urls.contains(url) && this.urls.size() < MAX_SEARCH && depth < MAX_DEPTH) {
+        if (!this.urls.contains(url) && this.urls.size() < MAX_SEARCH) {
             try {
                 Document doc = Jsoup.connect(url).get();
                 Elements links = doc.select("a[href]");
-                depth++;
                 // Looks through all links and checks to see if they are in search specifications
                 for (Element link: links) {
-                    // if the link is a course, then we check if it is within the user's serach specifications
+                    // if the link is a course, then we check if it is within the user's search specifications
                     if (link.toString().contains("/course/")) {
                         String coursePage = "https://fas.calendar.utoronto.ca" + link.attr("href");
                         coursePage = coursePage.toLowerCase();
@@ -47,15 +48,13 @@ public class Crawler {
                     else if (link.toString().contains("/search-courses?page")) {
                         String endUrl = link.attr("href");
                         String nextPage = "https://fas.calendar.utoronto.ca" + endUrl;
-                        this.findCourses(nextPage, keyword, breadth, level, depth);
+                        low++;
+                        this.findCourses(nextPage, keyword, breadth, level, low, high, false);
                     }
                 }
             }
-            catch (IOException e) {
-//                System.out.println("Error: " + e.getMessage());
-            }
-            catch (IllegalArgumentException e) {
-//                System.out.println("Error retrieving course " + url);
+            catch (IOException | IllegalArgumentException e) {
+                System.out.println("Error retrieving course " + url);
             }
         }
     }
@@ -81,10 +80,10 @@ public class Crawler {
             if (!level.equals("") && this.containsLevel(doc, level)) {
                 return url;
             }
-        } catch (IOException e) {
-            System.out.println("Error retrieving course " + url);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error retrieving course " + url);
+        } catch (IOException | IllegalArgumentException e) {
+            if (!url.equals("https://fas.calendar.utoronto.cahttp://www.artsci.utoronto.ca/current/course/rep")) {
+                System.out.println("Error retrieving course " + url);
+            }
         }
         return null;
     }

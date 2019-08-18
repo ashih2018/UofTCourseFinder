@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 
 public class Main extends Application {
 
-    private static final String URL = "https://fas.calendar.utoronto.ca/search-courses";
     private static int PAGE_NUM = 1;
     private Crawler crawler;
     private Scene scene1, scene2;
@@ -47,12 +46,23 @@ public class Main extends Application {
         Label levelLabel = new Label("Search for level classes: ");
         levelLabel.setLabelFor(levelInput);
 
+        TextField lowInput = new TextField();
+        Label lowLabel = new Label("Starting page number: ");
+        lowInput.setText("1");
+        lowLabel.setLabelFor(lowInput);
+
+        TextField highInput = new TextField();
+        Label highLabel = new Label("Ending page number: ");
+        highInput.setText("100");
+        highLabel.setLabelFor(highInput);
+
         Button searchButton = new Button();
         searchButton.setText("Search!");
         searchButton.setOnAction(e -> {
             // when the search button is clicked, the crawler calls the findCourses method
+            String URL = this.getStartingURL(lowInput.getText());
             if (this.checkURL(URL)) {
-                this.crawler.findCourses(URL, keywordInput.getText(), breadthInput.getText(), levelInput.getText(), 0);
+                this.crawler.findCourses(URL, keywordInput.getText(), breadthInput.getText(), levelInput.getText(), Integer.parseInt(lowInput.getText()) ,Integer.parseInt(highInput.getText()), true);
                 this.urls = this.crawler.getUrls();
                 primaryStage.setScene(scene2);
                 this.urlsText.setText(this.urls);
@@ -66,8 +76,8 @@ public class Main extends Application {
         container.getChildren().addAll(breadthInput, keywordInput, searchButton);
         VBox layout1 = new VBox(10);
         layout1.setPadding(new Insets(20, 20, 20, 20));
-        layout1.getChildren().addAll(keywordLabel, keywordInput, breadthLabel, breadthInput, levelLabel, levelInput, searchButton);
-        scene1 = new Scene(layout1, 300, 250);
+        layout1.getChildren().addAll(keywordLabel, keywordInput, breadthLabel, breadthInput, levelLabel, levelInput, lowLabel, lowInput, highLabel, highInput, searchButton);
+        scene1 = new Scene(layout1, 500, 500);
 
         // Layout 2
 
@@ -101,5 +111,15 @@ public class Main extends Application {
         Pattern pattern = Pattern.compile("((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:\\/[\\+~%\\/.\\w-_]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[\\w]*))?)");
         Matcher matcher = pattern.matcher(input);
         return matcher.matches();
+    }
+
+    private String getStartingURL(String start) {
+        if (Integer.parseInt(start) == 1) {
+            return "https://fas.calendar.utoronto.ca/search-courses";
+        }
+        else {
+            int pageNum = Integer.parseInt(start) - 1;
+            return "https://fas.calendar.utoronto.ca/search-courses" + "?page=" + pageNum;
+        }
     }
 }
