@@ -6,8 +6,6 @@ import org.jsoup.select.Elements;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,26 +14,15 @@ public class Crawler {
     private static final int MAX_SEARCH = 100;
     private static final int MAX_DEPTH = 3;
     private List<String> urls;
-    private Dictionary<String, String> breadthMap;
 
     public Crawler() {
-        this.breadthMap = new Hashtable();
-        this.urls = new LinkedList<String>();
-        this.fillBreadthMap();
-    }
-
-    private void fillBreadthMap() {
-        this.breadthMap.put("1", "Creative and Cultural Representations (1)");
-        this.breadthMap.put("2", "Thought, Belief and Behaviour (2)");
-        this.breadthMap.put("3", "Society and its Institutions (3)");
-        this.breadthMap.put("4", "Living Things and Their Environment (4)");
-        this.breadthMap.put("5", "The Physical and Mathematical Universes (5)");
+        this.urls = new LinkedList<>();
     }
 
     public void findCourses(String url, String keyword, String breadth, String level, int depth) {
         if (depth == 0) {
             // if we are searching we want to reset our urls list
-            this.urls = new LinkedList<String>();
+            this.urls = new LinkedList<>();
         }
         if (!this.urls.contains(url) && this.urls.size() < MAX_SEARCH && depth < MAX_DEPTH) {
             try {
@@ -44,6 +31,7 @@ public class Crawler {
                 depth++;
                 // Looks through all links and checks to see if they are in search specifications
                 for (Element link: links) {
+                    // if the link is a course, then we check if it is within the user's serach specifications
                     if (link.toString().contains("/course/")) {
                         String coursePage = "https://fas.calendar.utoronto.ca" + link.attr("href");
                         coursePage = coursePage.toLowerCase();
@@ -55,6 +43,7 @@ public class Crawler {
                         }
 
                     }
+                    // if the link found is a next page link, then we call this function with the next page link as a url
                     else if (link.toString().contains("/search-courses?page")) {
                         String endUrl = link.attr("href");
                         String nextPage = "https://fas.calendar.utoronto.ca" + endUrl;
@@ -79,6 +68,7 @@ public class Crawler {
         return allUrls.toString();
     }
 
+    // checks to see if the page has the keyword, breadth, or level entered
     private String checkCourse(String url, String keyword, String breadth, String level) {
         try {
             Document doc = Jsoup.connect(url).get();
@@ -92,22 +82,23 @@ public class Crawler {
                 return url;
             }
         } catch (IOException e) {
-//            System.out.println("Error: " + e.getMessage());
+            System.out.println("Error retrieving course " + url);
         } catch (IllegalArgumentException e) {
-//            System.out.println("Error retrieving course " + url);
+            System.out.println("Error retrieving course " + url);
         }
         return null;
     }
 
-    // this works
+    // returns true if the page contains the keyword
     private boolean containsKeyword(Document doc, String keyword) {
         String text = doc.body().text();
         return text.toLowerCase().contains(keyword.toLowerCase());
     }
 
-    // this works
+    // returns true if the breadth is equal to the breadth entered
     private boolean containsBreadth(Document doc, String breadth) {
         String breadthName = "";
+        // finds the DOM element with the class field-name-field-breadth-req to get breadth
         Elements breadthCourses = doc.getElementsByClass("field-name-field-breadth-req");
         for (Element course : breadthCourses) {
             breadthName = course.text();
@@ -115,7 +106,9 @@ public class Crawler {
         return breadthName.toLowerCase().contains(breadth.toLowerCase());
     }
 
+    // returns true if the breadth is equal to the level entered
     private boolean containsLevel(Document doc, String level) {
+        // finds the level through the DOM element with page-title as id
         String courseName = doc.getElementById("page-title").getElementById("page-title").text();
         if (courseName != null) {
             for (int i = 0; i < courseName.length(); i++) {
@@ -128,6 +121,7 @@ public class Crawler {
         return false;
     }
 
+    // saves urls found as a text file
     public void save(String str) {
         FileWriter fw;
         try {

@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
 
 public class Main extends Application {
 
-    public static final String URL = "https://fas.calendar.utoronto.ca/search-courses";
-    public static int PAGE_NUM = 1;
+    private static final String URL = "https://fas.calendar.utoronto.ca/search-courses";
+    private static int PAGE_NUM = 1;
     private Crawler crawler;
     private Scene scene1, scene2;
     private String urls;
@@ -32,7 +32,9 @@ public class Main extends Application {
         this.crawler = new Crawler();
         primaryStage.setTitle("UofT Course Search");
 
-        //layout1
+        //Layout 1
+
+        // User's search specifications
         TextField keywordInput = new TextField();
         Label keywordLabel = new Label("Search for keyword: ");
         keywordLabel.setLabelFor(keywordInput);
@@ -48,6 +50,7 @@ public class Main extends Application {
         Button searchButton = new Button();
         searchButton.setText("Search!");
         searchButton.setOnAction(e -> {
+            // when the search button is clicked, the crawler calls the findCourses method
             if (this.checkURL(URL)) {
                 this.crawler.findCourses(URL, keywordInput.getText(), breadthInput.getText(), levelInput.getText(), 0);
                 this.urls = this.crawler.getUrls();
@@ -66,7 +69,8 @@ public class Main extends Application {
         layout1.getChildren().addAll(keywordLabel, keywordInput, breadthLabel, breadthInput, levelLabel, levelInput, searchButton);
         scene1 = new Scene(layout1, 300, 250);
 
-        //layout 2
+        // Layout 2
+
         this.urlsText = new Text(10, 50, this.urls);
         this.urlsText.setFont(new Font(20));
         Label urlsLabel = new Label("URLs found: ");
