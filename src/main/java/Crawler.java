@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Crawler {
 
-    private static final int MAX_SEARCH = 100;
+    private static final int MAX_SEARCH = 10;
     private List<String> urls;
 
     public Crawler() {
@@ -40,6 +40,9 @@ public class Crawler {
                             String course = this.checkCourse(coursePage, keyword, breadth, level);
                             if (course != null) {
                                 this.urls.add(course.toLowerCase());
+                                if (this.urls.size() > MAX_SEARCH) {
+                                    return;
+                                }
                             }
                         }
 
@@ -71,6 +74,9 @@ public class Crawler {
     private String checkCourse(String url, String keyword, String breadth, String level) {
         try {
             Document doc = Jsoup.connect(url).get();
+            if (level.equals("") && keyword.equals("") && breadth.equals("")) {
+                return url;
+            }
             if (!keyword.equals("") && this.containsKeyword(doc, keyword)) {
                 return url;
             }
